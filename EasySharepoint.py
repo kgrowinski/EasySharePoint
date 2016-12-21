@@ -32,10 +32,12 @@ class SharePointConnector:
     Class responsible fro performing most common SharePoint Operations.
     Use also to authenticate access to the SharepointSite and to get a digest value for POST requests.
     """
+
     def __init__(self, login, password, base_url, domain="eur"):
         self.session = requests.Session()
         self.base_url = base_url + "/"
         self.session.auth = HttpNtlmAuth("{}\\{}".format(domain, login), "{}".format(password))
+        self.error_list = [400, 500, 404, 403]
 
     def get_all_lists(self):
         """
@@ -49,9 +51,12 @@ class SharePointConnector:
         )
         print("Get all list.")
         print("GET: {}".format(get.status_code))
-        return get.json()["d"]
+        if get.status_code in self.error_list:
+            print(get.content)
+        else:
+            return get.json()["d"]["results"]
 
-    def create_new_list(self, data=None, list_name="new_list", description=""):
+    def create_new_list(self, list_name="new_list", description="", data=None):
         """
         Use to create new SharePoint List.
         By default creates new List with "new_list" name and blank name.
@@ -78,7 +83,8 @@ class SharePointConnector:
         )
         print("Create new list - {}.".format(list_name))
         print("POST: {}".format(post.status_code))
-        return post.json()["d"]
+        if post.status_code in self.error_list:
+            print(post.content)
 
     def create_new_list_field(self, list_name, data=None, filed_name="new_field", field_type=2):
         """
@@ -164,7 +170,8 @@ class SharePointConnector:
         )
         print("Create new list header of name {} and type {} for {}.".format(filed_name, field_type, list_name))
         print("POST: {}".format(post.status_code))
-        return post.json()
+        if post.status_code in self.error_list:
+            print(post.content)
 
     def update_list(self, list_guid, data=None, new_list_name="new_list"):
         """
@@ -189,7 +196,8 @@ class SharePointConnector:
         )
         print("Update list name for list of GUID: {}".format(list_guid))
         print("PUT: {}".format(put.status_code))
-        return put.json()
+        if put.status_code in self.error_list:
+            print(put.content)
 
     def delete_list(self, list_guid):
         """
@@ -200,12 +208,13 @@ class SharePointConnector:
         """
         headers["DELETE"]["X-RequestDigest"] = self.digest()
         delete = self.session.delete(
-            self.base_url + "_api/web/lists('{}')".format(list_guid),
+            self.base_url + "_api/web/lists(guid'{}')".format(list_guid),
             headers=headers["DELETE"]
         )
         print("Delete list of GUID: {}".format(list_guid))
         print("DELETE: {}".format(delete.status_code))
-        return delete.json()
+        if delete.status_code in self.error_list:
+            print(delete.content)
 
     def get_list_items(self, list_name):
         """
@@ -220,7 +229,10 @@ class SharePointConnector:
         )
         print("Get list items from {}.".format(list_name))
         print("GET: {}".format(get.status_code))
-        return get.json()
+        if get.status_code in self.error_list:
+            print(get.content)
+        else:
+            return get.json()["d"]["results"]
 
     def create_new_list_item(self, list_name, data=None):
         """
@@ -238,7 +250,8 @@ class SharePointConnector:
         )
         print("Create new list item in {}.".format(list_name))
         print("POST: {}".format(post.status_code))
-        return post.json()
+        if post.status_code in self.error_list:
+            print(post.content)
 
     def update_list_item(self, list_name, item_id=0, data=None):
         """
@@ -257,7 +270,8 @@ class SharePointConnector:
         )
         print("Update list item of id {} in {}.".format(item_id, list_name))
         print("PUT: {}".format(put.status_code))
-        return put.json()
+        if put.status_code in self.error_list:
+            print(put.content)
 
     def delete_list_item(self, list_name, item_id=0):
         """
@@ -274,7 +288,8 @@ class SharePointConnector:
         )
         print("Delete list item of id {} in {}.".format(item_id, list_name))
         print("DELETE: {}".format(delete.status_code))
-        return delete.json()
+        if delete.status_code in self.error_list:
+            print(delete.content)
 
     # Add functions related to document libraries and lists attachments
 
