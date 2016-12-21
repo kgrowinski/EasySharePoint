@@ -32,7 +32,7 @@ class SharePointConnector:
     Class responsible fro performing most common SharePoint Operations.
     Use also to authenticate access to the SharepointSite and to get a digest value for POST requests.
     """
-    def __init__(self, login, password, base_url, domain=""):
+    def __init__(self, login, password, base_url, domain="eur"):
         self.session = requests.Session()
         self.base_url = base_url + "/"
         self.session.auth = HttpNtlmAuth("{}\\{}".format(domain, login), "{}".format(password))
