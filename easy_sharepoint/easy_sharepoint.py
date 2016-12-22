@@ -373,8 +373,6 @@ class SharePointConnector:
         print("PUT: {}".format(put.status_code))
         if put.status_code in self.error_list:
             print(put.content)
-        else:
-            return put.json()["d"]
 
     def delete_folder(self, folder_name):
         headers["DELETE"]["X-RequestDigest"] = self.digest()
