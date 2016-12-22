@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='easy_sharepoint',
@@ -8,5 +8,9 @@ setup(
     license='MIT',
     author='Krzysztof Growinski',
     author_email='',
-    description=''
+    description='',
+    install_requires=[
+        'requests',
+        'requests_ntlm'
+    ],
 )
