@@ -39,7 +39,7 @@ class SharePointConnector:
         self.session = requests.Session()
         self.base_url = base_url + "/"
         self.session.auth = HttpNtlmAuth("{}\\{}".format(domain, login), "{}".format(password))
-        self.error_list = [400, 500, 404, 403]
+        self.success_list = [200, 201, 202]
 
     def get_all_lists(self):
         """
@@ -53,7 +53,7 @@ class SharePointConnector:
         )
         print("Get all list.")
         print("GET: {}".format(get.status_code))
-        if get.status_code in self.error_list:
+        if get.status_code not in self.success_list:
             print(get.content)
         else:
             return get.json()["d"]["results"]
@@ -104,7 +104,7 @@ class SharePointConnector:
         )
         print("Create new list - {}.".format(list_name))
         print("POST: {}".format(post.status_code))
-        if post.status_code in self.error_list:
+        if post.status_code not in self.success_list:
             print(post.content)
 
     def create_new_list_field(self, list_name, data=None, filed_name="new_field", field_type=2):
@@ -191,7 +191,7 @@ class SharePointConnector:
         )
         print("Create new list header of name {} and type {} for {}.".format(filed_name, field_type, list_name))
         print("POST: {}".format(post.status_code))
-        if post.status_code in self.error_list:
+        if post.status_code not in self.success_list:
             print(post.content)
 
     def update_list(self, list_guid, data=None):
@@ -212,7 +212,7 @@ class SharePointConnector:
         )
         print("Update list name for list of GUID: {}".format(list_guid))
         print("PUT: {}".format(put.status_code))
-        if put.status_code in self.error_list:
+        if put.status_code not in self.success_list:
             print(put.content)
 
     def delete_list(self, list_guid):
@@ -229,7 +229,7 @@ class SharePointConnector:
         )
         print("Delete list of GUID: {}".format(list_guid))
         print("DELETE: {}".format(delete.status_code))
-        if delete.status_code in self.error_list:
+        if delete.status_code not in self.success_list:
             print(delete.content)
 
     def get_list_items(self, list_name):
@@ -245,7 +245,7 @@ class SharePointConnector:
         )
         print("Get list items from {}.".format(list_name))
         print("GET: {}".format(get.status_code))
-        if get.status_code in self.error_list:
+        if get.status_code not in self.success_list:
             print(get.content)
         else:
             return get.json()["d"]["results"]
@@ -273,7 +273,7 @@ class SharePointConnector:
         )
         print("Create new list item in {}.".format(list_name))
         print("POST: {}".format(post.status_code))
-        if post.status_code in self.error_list:
+        if post.status_code not in self.success_list:
             print(post.content)
 
     def update_list_item(self, list_name, item_id=0, data=None):
@@ -293,7 +293,7 @@ class SharePointConnector:
         )
         print("Update list item of id {} in {}.".format(item_id, list_name))
         print("PUT: {}".format(put.status_code))
-        if put.status_code in self.error_list:
+        if put.status_code not in self.success_list:
             print(put.content)
 
     def delete_list_item(self, list_name, item_id=0):
@@ -311,7 +311,7 @@ class SharePointConnector:
         )
         print("Delete list item of id {} in {}.".format(item_id, list_name))
         print("DELETE: {}".format(delete.status_code))
-        if delete.status_code in self.error_list:
+        if delete.status_code not in self.success_list:
             print(delete.content)
 
     # Add functions related to document libraries and lists attachments
@@ -328,7 +328,7 @@ class SharePointConnector:
         )
         print("Get information for {} folder.".format(folder_name))
         print("GET: {}".format(get.status_code))
-        if get.status_code in self.error_list:
+        if get.status_code not in self.success_list:
             print(get.content)
         else:
             return get.json()["d"]["results"]
@@ -357,7 +357,7 @@ class SharePointConnector:
         )
         print("Create new folder {} in {}.".format(folder_name, document_library))
         print("POST: {}".format(post.status_code))
-        if post.status_code in self.error_list:
+        if post.status_code not in self.success_list:
             print(post.content)
         else:
             return post.json()["d"]
@@ -371,7 +371,7 @@ class SharePointConnector:
         )
         print("Update folder information for {}.".format(folder_name))
         print("PUT: {}".format(put.status_code))
-        if put.status_code in self.error_list:
+        if put.status_code not in self.success_list:
             print(put.content)
 
     def delete_folder(self, folder_name):
@@ -382,7 +382,7 @@ class SharePointConnector:
         )
         print("Delete folder of name {}.".format(folder_name))
         print("DELETE: {}".format(delete.status_code))
-        if delete.status_code in self.error_list:
+        if delete.status_code not in self.success_list:
             print(delete.content)
 
     # Add functions related to file manipulation
