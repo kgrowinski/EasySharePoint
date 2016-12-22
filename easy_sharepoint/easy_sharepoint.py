@@ -331,61 +331,9 @@ class SharePointConnector:
         if get.status_code not in self.success_list:
             print(get.content)
         else:
-            return get.json()["d"]["results"]
+            return get.json()["d"]
 
-    def create_new_folder(self, folder_name, document_library, data=None):
-        """
-        Creates a new folder i na given document library
-
-        :param folder_name:
-        :param document_library: Document Library where folder should be created
-        :param data: Optional, provide a data by which the item will be updated
-        :return: Returns REST response
-        """
-        headers["POST"]["X-RequestDigest"] = self.digest()
-        if data is None:
-            data = {
-                '__metadata': {
-                    'type': 'SP.Folder'
-                },
-                'ServerRelativeUrl': '/{}/{}'.format(document_library, folder_name)
-            }
-        post = self.session.post(
-            self.base_url + "_api/web/folders",
-            data=json.dumps(data),
-            headers=headers["POST"]
-        )
-        print("Create new folder {} in {}.".format(folder_name, document_library))
-        print("POST: {}".format(post.status_code))
-        if post.status_code not in self.success_list:
-            print(post.content)
-        else:
-            return post.json()["d"]
-
-    def update_folder(self, folder_name, data=None):
-        headers["PUT"]["X-RequestDigest"] = self.digest()
-        put = self.session.post(
-            self.base_url + "_api/web/GetFolderByServerRelativeUrl('/{}')".format(folder_name),
-            data=json.dumps(data),
-            headers=headers["PUT"]
-        )
-        print("Update folder information for {}.".format(folder_name))
-        print("PUT: {}".format(put.status_code))
-        if put.status_code not in self.success_list:
-            print(put.content)
-
-    def delete_folder(self, folder_name):
-        headers["DELETE"]["X-RequestDigest"] = self.digest()
-        delete = self.session.delete(
-            self.base_url + "http://site url/_api/web/GetFolderByServerRelativeUrl('/{}')".format(folder_name),
-            headers=headers["DELETE"]
-        )
-        print("Delete folder of name {}.".format(folder_name))
-        print("DELETE: {}".format(delete.status_code))
-        if delete.status_code not in self.success_list:
-            print(delete.content)
-
-    # Add functions related to file manipulation
+            # Add functions related to file manipulation
 
     def digest(self):
         """
