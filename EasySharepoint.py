@@ -349,7 +349,8 @@ class SharePointDataParser:
         return output_data
 
     @staticmethod
-    def list_field_data(data, ):
+    def list_field_data(data):
+        pass
 
     @staticmethod
     def list_item_meta(list_name):
