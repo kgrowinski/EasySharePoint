@@ -22,6 +22,7 @@ headers = {
         "Accept": "application/json;odata=verbose",
         "Content-Type": "application/json;odata=verbose",
         "X-requestDigest": "",
+        "X-HTTP-Method": "DELETE",
         "If-Match": "*"
     },
 }
@@ -354,4 +355,4 @@ class SharePointDataParser:
 
     @staticmethod
     def list_item_meta(list_name):
-        return "SP.Data.{}ListItem".format(list_name.title())
+        return "SP.Data." + list_name[0].upper() + list_name[1::] + "ListItem"
