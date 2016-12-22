@@ -1,5 +1,6 @@
-import requests
 import json
+
+import requests
 from requests_ntlm import HttpNtlmAuth
 
 headers = {
