@@ -324,5 +324,26 @@ class SharePointConnector:
 
 
 class SharePointDataParser:
-    def __init__(self):
+    def list_item_data_create(self):
         pass
+
+    def list_item_data_update(self):
+        pass
+
+    def list_data_create(self):
+        pass
+
+    def list_data_update(self):
+        pass
+
+    def list_field_data_create(self):
+        pass
+
+
+    @staticmethod
+    def list_item_meta(list_name):
+        return "SP.Data.{}ListItem".format(list_name.title())
+
+
+
+
