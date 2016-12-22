@@ -58,7 +58,8 @@ class SharePointConnector:
         else:
             return get.json()["d"]["results"]
 
-    def create_new_list(self, list_name="new_list", description="", data=None):
+    def create_new_list(self, data=None, list_name="new_list", description="", allow_content_types=True,
+                        base_template=100, content_types_enabled=True):
         """
         Use to create new SharePoint List.
         By default creates new List with "new_list" name and blank name.
@@ -72,9 +73,9 @@ class SharePointConnector:
         if data is None:
             data = {
                 '__metadata': {'type': 'SP.List'},
-                'AllowContentTypes': True,
-                'BaseTemplate': 100,
-                'ContentTypesEnabled': True,
+                'AllowContentTypes': allow_content_types,
+                'BaseTemplate': base_template,
+                'ContentTypesEnabled': content_types_enabled,
                 'Description': '{}'.format(description),
                 'Title': '{}'.format(list_name)
             }
@@ -245,6 +246,13 @@ class SharePointConnector:
         :return: Returns a REST response.
         """
         headers["POST"]['X-RequestDigest'] = self.digest()
+        if data is None:
+            data = {
+                '__metadata': {
+                    'type': 'SP.Data.{}ListItem'.format(list_name.title())
+                },
+                'Title': 'New_list_Item'
+            }
         post = self.session.post(
             self.base_url + "_api/web/lists/GetByTitle('{}')".format(list_name) + "/items",
             data=json.dumps(data),
@@ -294,6 +302,50 @@ class SharePointConnector:
             print(delete.content)
 
     # Add functions related to document libraries and lists attachments
+    def get_folder_information(self, folder_name):
+        """
+        Gets all information about given folder directory.
+
+        :param folder_name:  Required, name of the folder
+        :return: Returns REST response
+        """
+        get = self.session.get(
+            self.base_url + "_api/web/GetFolderByServerRelativeUrl('/{}')".format(folder_name),
+            headers=headers["GET"]
+        )
+        print("Get information for {} folder.".format(folder_name))
+        print("GET: {}".format(get.status_code))
+        if get.status_code in self.error_list:
+            print(get.content)
+        else:
+            return get.json()["d"]["results"]
+
+    def create_new_folder(self, folder_name, data=None):
+        """
+        Creates a new folder
+        :param folder_name:
+        :param data:
+        :return:
+        """
+        headers["POST"]["X-RequestDigest"] = self.digest()
+        if data is None:
+            data = {
+                '__metadata': {
+                    'type': 'SP.Folder'
+                },
+                'ServerRelativeUrl': str(folder_name)
+            }
+        post = self.session.post(
+            self.base_url + "_api/web/folders",
+            data=data,
+            headers=headers["POST"]
+        )
+        print("Create new folder {} .".format(folder_name))
+        print("POST: {}".format(post.status_code))
+        if post.status_code in self.error_list:
+            print(post.content)
+        else:
+            return post.json()["d"]["results"]
 
     def digest(self):
         """
