@@ -349,5 +349,8 @@ class SharePointDataParser:
         return output_data
 
     @staticmethod
+    def list_field_data(data, ):
+
+    @staticmethod
     def list_item_meta(list_name):
         return "SP.Data.{}ListItem".format(list_name.title())
