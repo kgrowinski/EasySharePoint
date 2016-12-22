@@ -324,26 +324,30 @@ class SharePointConnector:
 
 
 class SharePointDataParser:
-    def list_item_data_create(self):
-        pass
+    def list_item_data(self, list_name, data):
+        output_data = {
+            '__metadata': {
+                'type': self.list_item_meta(list_name)
+            },
+        }
+        for key, value in data.items():
+            output_data[key] = value
+        return output_data
 
-    def list_item_data_update(self):
-        pass
-
-    def list_data_create(self):
-        pass
-
-    def list_data_update(self):
-        pass
-
-    def list_field_data_create(self):
-        pass
-
+    @staticmethod
+    def list_data(data, allow_content_types=True, base_template=100, content_types_enabled=True):
+        output_data = {
+            '__metadata': {
+                'type': 'SP.List'
+            },
+            'AllowContentTypes': allow_content_types,
+            'BaseTemplate': base_template,
+            'ContentTypesEnabled': content_types_enabled
+        }
+        for key, value in data.items():
+            output_data[key] = value
+        return output_data
 
     @staticmethod
     def list_item_meta(list_name):
         return "SP.Data.{}ListItem".format(list_name.title())
-
-
-
-
