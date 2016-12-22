@@ -22,6 +22,7 @@ headers = {
         "Accept": "application/json;odata=verbose",
         "Content-Type": "application/json;odata=verbose",
         "X-requestDigest": "",
+        "X-HTTP-Method": "DELETE",
         "If-Match": "*"
     },
 }
@@ -324,5 +325,34 @@ class SharePointConnector:
 
 
 class SharePointDataParser:
-    def __init__(self):
+    def list_item_data(self, list_name, data):
+        output_data = {
+            '__metadata': {
+                'type': self.list_item_meta(list_name)
+            },
+        }
+        for key, value in data.items():
+            output_data[key] = value
+        return output_data
+
+    @staticmethod
+    def list_data(data, allow_content_types=True, base_template=100, content_types_enabled=True):
+        output_data = {
+            '__metadata': {
+                'type': 'SP.List'
+            },
+            'AllowContentTypes': allow_content_types,
+            'BaseTemplate': base_template,
+            'ContentTypesEnabled': content_types_enabled
+        }
+        for key, value in data.items():
+            output_data[key] = value
+        return output_data
+
+    @staticmethod
+    def list_field_data(data):
         pass
+
+    @staticmethod
+    def list_item_meta(list_name):
+        return "SP.Data." + list_name[0].upper() + list_name[1::] + "ListItem"
