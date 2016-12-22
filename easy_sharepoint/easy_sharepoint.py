@@ -22,7 +22,7 @@ headers = {
     "DELETE": {
         "Accept": "application/json;odata=verbose",
         "Content-Type": "application/json;odata=verbose",
-        "X-requestDigest": "",
+        "X-RequestDigest": "",
         "X-HTTP-Method": "DELETE",
         "If-Match": "*"
     },
@@ -62,11 +62,29 @@ class SharePointConnector:
                         base_template=100, content_types_enabled=True):
         """
         Use to create new SharePoint List.
-        By default creates new List with "new_list" name and blank name.
+        By default creates new List of any Type with "new_list" name and blank name.
+
+        Basic Types:
+            100	Custom list
+            101	Document library
+            102	Survey
+            103	Links
+            104	Announcements
+            105	Contacts
+            106	Calendar
+            107	Tasks
+            108	Discussion board
+            109	Picture library
+            110	Data sources for a site
+            111	Site template gallery
+            112	User Information
+            113	Web Part gallery
+
 
         :param data: Optional Parameter when you need to use your own data
         :param list_name: Name of new List - Optional, by default set to "new_list".
         :param description: Description of the list - Optional, by default set to blank.
+        :param base_template: Optional, determines the list type
         :return: Returns a REST response.
         """
         headers["POST"]["X-RequestDigest"] = self.digest()
@@ -176,7 +194,7 @@ class SharePointConnector:
         if post.status_code in self.error_list:
             print(post.content)
 
-    def update_list(self, list_guid, data=None, new_list_name="new_list"):
+    def update_list(self, list_guid, data=None):
         """
         Updates a SharepointList Information
         By default changes only a list Title.
@@ -187,11 +205,6 @@ class SharePointConnector:
         :return: Returns a REST response.
         """
         headers["PUT"]["X-RequestDigest"] = self.digest()
-        if data is None:
-            data = {
-                '__metadata': {'type': 'SP.List'},
-                'Title': str(new_list_name),
-            }
         put = self.session.post(
             self.base_url + "_api/web/lists(guid'{}')".format(list_guid),
             headers=headers["PUT"],
@@ -320,12 +333,14 @@ class SharePointConnector:
         else:
             return get.json()["d"]["results"]
 
-    def create_new_folder(self, folder_name, data=None):
+    def create_new_folder(self, folder_name, document_library, data=None):
         """
-        Creates a new folder
+        Creates a new folder i na given document library
+
         :param folder_name:
-        :param data:
-        :return:
+        :param document_library: Document Library where folder should be created
+        :param data: Optional, provide a data by which the item will be updated
+        :return: Returns REST response
         """
         headers["POST"]["X-RequestDigest"] = self.digest()
         if data is None:
@@ -333,19 +348,46 @@ class SharePointConnector:
                 '__metadata': {
                     'type': 'SP.Folder'
                 },
-                'ServerRelativeUrl': str(folder_name)
+                'ServerRelativeUrl': '/{}/{}'.format(document_library, folder_name)
             }
         post = self.session.post(
             self.base_url + "_api/web/folders",
-            data=data,
+            data=json.dumps(data),
             headers=headers["POST"]
         )
-        print("Create new folder {} .".format(folder_name))
+        print("Create new folder {} in {}.".format(folder_name, document_library))
         print("POST: {}".format(post.status_code))
         if post.status_code in self.error_list:
             print(post.content)
         else:
-            return post.json()["d"]["results"]
+            return post.json()["d"]
+
+    def update_folder(self, folder_name, data=None):
+        headers["PUT"]["X-RequestDigest"] = self.digest()
+        put = self.session.post(
+            self.base_url + "_api/web/GetFolderByServerRelativeUrl('/{}')".format(folder_name),
+            data=json.dumps(data),
+            headers=headers["PUT"]
+        )
+        print("Update folder information for {}.".format(folder_name))
+        print("PUT: {}".format(put.status_code))
+        if put.status_code in self.error_list:
+            print(put.content)
+        else:
+            return put.json()["d"]
+
+    def delete_folder(self, folder_name):
+        headers["DELETE"]["X-RequestDigest"] = self.digest()
+        delete = self.session.delete(
+            self.base_url + "http://site url/_api/web/GetFolderByServerRelativeUrl('/{}')".format(folder_name),
+            headers=headers["DELETE"]
+        )
+        print("Delete folder of name {}.".format(folder_name))
+        print("DELETE: {}".format(delete.status_code))
+        if delete.status_code in self.error_list:
+            print(delete.content)
+
+    # Add functions related to file manipulation
 
     def digest(self):
         """
@@ -397,6 +439,17 @@ class SharePointDataParser:
             'AllowContentTypes': allow_content_types,
             'BaseTemplate': base_template,
             'ContentTypesEnabled': content_types_enabled
+        }
+        for key, value in data.items():
+            output_data[key] = value
+        return output_data
+
+    @staticmethod
+    def folder_data(data):
+        output_data = {
+            '__metadata': {
+                'type': 'SP.Folder'
+            },
         }
         for key, value in data.items():
             output_data[key] = value
