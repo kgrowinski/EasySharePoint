@@ -13,10 +13,10 @@ EasaySharepoint commes with many functions that prevously might been tricky.
 
 # Usage description to be made
 
-<h3>License <h3>
 
 
 
+<hr>
 MIT License
 
 Copyright (c) 2016 Krzysztof Growiński
