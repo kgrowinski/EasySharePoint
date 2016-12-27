@@ -436,6 +436,7 @@ class SharePointConnector:
         :param file_name: Required, file name to check in
         :param destination_library: Required, folder where file exists
         :param comment: Optional, Comment with which file will be checked in.
+        :param check_in_type: Optional
         :return: Returns REST response
         """
         headers["POST"]["X-RequestDigest"] = self.digest()
