@@ -210,7 +210,7 @@ class SharePointConnector:
         put = self.session.post(
             self.base_url + "_api/web/lists(guid'{}')".format(list_guid),
             headers=headers["PUT"],
-            data=json.dumps(data)
+            data=json.dumps(data),
         )
         print("Update list name for list of GUID: {}".format(list_guid))
         print("PUT: {}".format(put.status_code))
@@ -536,7 +536,7 @@ class SharePointConnector:
 
     def get_list_item_attachments(self, list_name, item_id):
         get = self.session.get(
-            self.base_url + "_api/web/lists/getbytitle('{}')/items({})/AttachmentFiles/".format(
+            self.base_url + "_api/web/lists/GetByTitle('{}')/items({})/AttachmentFiles/".format(
                 list_name,
                 item_id
             ),
@@ -551,7 +551,7 @@ class SharePointConnector:
 
     def get_list_item_attachment(self, list_name, item_id, file_name):
         get = self.session.get(
-            self.base_url + "_api/web/lists/getbytitle('{}')/items({})/AttachmentFiles('{}')/$value".format(
+            self.base_url + "_api/web/lists/GetByTitle('{}')/items({})/AttachmentFiles('{}')/$value".format(
                 list_name,
                 item_id,
                 file_name
@@ -571,7 +571,7 @@ class SharePointConnector:
         file_to_bites = bytearray(file.read())
 
         post = self.session.post(
-            self.base_url + "_api/web/lists/getbytitle('{}')/items({})/AttachmentFiles/ add(FileName='{}')".format(
+            self.base_url + "_api/web/lists/GetByTitle('{}')/items({})/AttachmentFiles/ add(FileName='{}')".format(
                 list_name,
                 item_id,
                 os.path.basename(file.name)
@@ -598,7 +598,7 @@ class SharePointConnector:
         file_to_bites = bytearray(file.read())
 
         put = self.session.post(
-            self.base_url + "_api/web/lists/getbytitle('{}')/items({})/AttachmentFiles('{}')/$value".format(
+            self.base_url + "_api/web/lists/GetByTitle('{}')/items({})/AttachmentFiles('{}')/$value".format(
                 list_name,
                 item_id,
                 os.path.basename(file.name)
@@ -618,6 +618,45 @@ class SharePointConnector:
             print(put.content)
         else:
             return put.json()["d"]
+
+    def custom_query(self, query, request_type="GET", data=None):
+        if request_type == "GET":
+            get = self.session.get(
+                self.base_url + query,
+                headers=headers["GET"]
+            )
+            print("GET: {}".format(get.status_code))
+        elif request_type == "POST":
+            if data is None:
+                raise AttributeError("Data needs to be provided to perform this request!")
+            else:
+                headers["POST"]["X-RequestDigest"] = self.digest()
+                self.session.post(
+                    self.base_url + query,
+                    headers=headers["POST"],
+                    data=json.dumps(data)
+                )
+        elif request_type == "PUT":
+            if data is None:
+                raise AttributeError("Data needs to be provided to perform this request!")
+            else:
+                headers["PUT"]["X-RequestDigest"] = self.digest()
+                self.session.post(
+                    self.base_url + query,
+                    headers=headers["PUT"],
+                    data=json.dumps(data)
+                )
+        elif request_type == "DELETE":
+            if data is None:
+                raise AttributeError("Data needs to be provided to perform this request!")
+            else:
+                headers["DELETE"]["X-RequestDigest"] = self.digest()
+                self.session.post(
+                    self.base_url + query,
+                    headers=headers["DELETE"],
+                )
+        else:
+            raise AttributeError("Wrong request type!")
 
     def digest(self):
         """
