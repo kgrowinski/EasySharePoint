@@ -335,6 +335,26 @@ class SharePointConnector:
 
             # Add functions related to file manipulation
 
+    def upload_file(self, file_path, destination_library):
+        headers["POST"]["X-RequestDigest"] = self.digest()
+        file = open(file_path, "rb")
+        file_as_bytes = bytearray(file.read())
+
+        post = self.session.post(
+            self.base_url + "_api/web/GetFolderByServerRalativeUrl('/{}')/Files/add(url='{}',overwrite=true)".format(
+                destination_library,
+                file.name
+            ),
+            data=file_as_bytes,
+            headers=headers["POST"]
+        )
+        print("Add file '{}' to librairy '{}'.".format(file.name, destination_library))
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]
+
     def digest(self):
         """
         Helper function.
