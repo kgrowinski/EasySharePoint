@@ -85,6 +85,8 @@ class SharePointConnector:
         :param list_name: Name of new List - Optional, by default set to "new_list".
         :param description: Description of the list - Optional, by default set to blank.
         :param base_template: Optional, determines the list type
+        :param allow_content_types: Optional
+        :param content_types_enabled: Optional
         :return: Returns a REST response.
         """
         headers["POST"]["X-RequestDigest"] = self.digest()
@@ -201,7 +203,6 @@ class SharePointConnector:
 
         :param list_guid: Required, individual id of the List you want to Modify
         :param data: Optional Parameter when you need to use your own data
-        :param new_list_name: Optional, the new name of your list, by default set to "new_list"
         :return: Returns a REST response.
         """
         headers["PUT"]["X-RequestDigest"] = self.digest()
@@ -336,6 +337,13 @@ class SharePointConnector:
             # Add functions related to file manipulation
 
     def upload_file(self, file_path, destination_library):
+        """
+        Uploads a file to given library/folder.
+
+        :param file_path: Required, file as path
+        :param destination_library: Required, destination of upload
+        :return: Returns REST response
+        """
         headers["POST"]["X-RequestDigest"] = self.digest()
         file = open(file_path, "rb")
         file_as_bytes = bytearray(file.read())
@@ -348,7 +356,7 @@ class SharePointConnector:
             data=file_as_bytes,
             headers=headers["POST"]
         )
-        print("Add file '{}' to librairy '{}'.".format(file.name, destination_library))
+        print("Add file '{}' to library '{}'.".format(file.name, destination_library))
         print("POST: {}".format(post.status_code))
         if post.status_code not in self.success_list:
             print(post.content)
