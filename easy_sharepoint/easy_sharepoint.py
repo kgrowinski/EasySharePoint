@@ -32,10 +32,9 @@ headers = {
 
 class SharePointConnector:
     """
-    Class responsible fro performing most common SharePoint Operations.
+    Class responsible for performing most of common SharePoint Operations.
     Use also to authenticate access to the SharepointSite and to get a digest value for POST requests.
     """
-
     def __init__(self, login, password, base_url, domain="eur"):
         self.session = requests.Session()
         self.base_url = base_url + "/"
