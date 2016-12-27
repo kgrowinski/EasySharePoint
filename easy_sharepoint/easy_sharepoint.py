@@ -337,7 +337,7 @@ class SharePointConnector:
 
             # Add functions related to file manipulation
 
-    def upload_file(self, file_path, destination_library):
+    def create_new_file(self, file_path, destination_library):
         """
         Uploads a file to given library/folder.
 
@@ -366,6 +366,90 @@ class SharePointConnector:
             print(post.content)
         else:
             return post.json()["d"]
+
+    def update_file(self, file_path, destination_library):
+        headers["PUT"]["X-RequestDigest"] = self.diest()
+        file = open(file_path, "rb")
+        file_as_bytes = bytearray(file.read())
+
+        put = self.session.post(
+            self.base_url + "_api/web/GetFileByServerRelativeUrl('/{}/{}')/$value".format(
+                destination_library,
+                os.path.basename(file.name),
+                headers=headers["PUT"],
+                data=file_as_bytes
+            )
+        )
+        print("Update file '{}' in library '{}'.".format(
+            os.path.basename(file.name),
+            destination_library)
+        )
+        print("POST: {}".format(put.status_code))
+        if put.status_code not in self.success_list:
+            print(put.content)
+        else:
+            return put.json()["d"]
+
+    def file_check_out(self, file_name, destination_library):
+        headers["POST"]["X-RequestDigest"] = self.digest()
+        post = self.session.post(
+            self.base_url + "_api/web/GetFileByServerRelativeUrl('/{}/{}')/CheckOut()".format(
+                destination_library,
+                file_name
+            ),
+            headers=headers["POST"]
+        )
+        print("CheckOut file '{}' in library '{}'.".format(
+            os.path.basename(file_name),
+            destination_library)
+        )
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]
+
+    def file_check_in(self, file_name, destination_library, comment, check_in_type=0):
+        headers["POST"]["X-RequestDigest"] = self.digest()
+        post = self.session.post(
+            self.base_url + "_api/web/GetFileByServerRelativeUrl('/{}/{}')/CheckIn\
+            (comment='{}',checkintype={})".format(
+                destination_library,
+                file_name,
+                comment,
+                check_in_type
+            ),
+            headers=headers["POST"]
+        )
+        print("CheckIn file '{}' in library '{}' with comment {}.".format(
+            os.path.basename(file_name),
+            destination_library,
+            comment
+        ))
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]
+
+    def delete_file(self, file_name, destination_library):
+        headers["DELETE"]["X-RequestDigest"] = self.digest()
+        delete = self.session.delete(
+            self.base_url + "_api/web/GetFileByServerRelativeUrl('/{}/{}')".format(
+                destination_library,
+                file_name
+            ),
+            headers=headers["DELETE"]
+        )
+        print("Delete file '{}' from library '{}'.".format(
+            os.path.basename(file_name),
+            destination_library,
+        ))
+        print("POST: {}".format(delete.status_code))
+        if delete.status_code not in self.success_list:
+            print(delete.content)
+        else:
+            return delete.json()["d"]
 
     def digest(self):
         """
