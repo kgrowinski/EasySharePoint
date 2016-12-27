@@ -1,4 +1,5 @@
 import json
+import os
 
 import requests
 from requests_ntlm import HttpNtlmAuth
@@ -351,12 +352,15 @@ class SharePointConnector:
         post = self.session.post(
             self.base_url + "_api/web/GetFolderByServerRalativeUrl('/{}')/Files/add(url='{}',overwrite=true)".format(
                 destination_library,
-                file.name
+                os.path.basename(file.name)
             ),
             data=file_as_bytes,
             headers=headers["POST"]
         )
-        print("Add file '{}' to library '{}'.".format(file.name, destination_library))
+        print("Add file '{}' to library '{}'.".format(
+            os.path.basename(file.name),
+            destination_library)
+        )
         print("POST: {}".format(post.status_code))
         if post.status_code not in self.success_list:
             print(post.content)
