@@ -628,7 +628,7 @@ class SharePointConnector:
             print("GET: {}".format(get.status_code))
         elif request_type == "POST":
             if data is None:
-                raise AttributeError("Data needs to be provided to perform this request!")
+                raise AttributeError("Data needs to be provided to perform this request.")
             else:
                 headers["POST"]["X-RequestDigest"] = self.digest()
                 self.session.post(
@@ -638,7 +638,7 @@ class SharePointConnector:
                 )
         elif request_type == "PUT":
             if data is None:
-                raise AttributeError("Data needs to be provided to perform this request!")
+                raise AttributeError("Data needs to be provided to perform this request.")
             else:
                 headers["PUT"]["X-RequestDigest"] = self.digest()
                 self.session.post(
@@ -648,7 +648,7 @@ class SharePointConnector:
                 )
         elif request_type == "DELETE":
             if data is None:
-                raise AttributeError("Data needs to be provided to perform this request!")
+                raise AttributeError("Data needs to be provided to perform this request.")
             else:
                 headers["DELETE"]["X-RequestDigest"] = self.digest()
                 self.session.post(
@@ -656,7 +656,7 @@ class SharePointConnector:
                     headers=headers["DELETE"],
                 )
         else:
-            raise AttributeError("Wrong request type!")
+            raise AttributeError("Wrong request type.")
 
     def digest(self):
         """
