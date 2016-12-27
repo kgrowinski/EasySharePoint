@@ -437,7 +437,7 @@ class SharePointConnector:
                 destination_library
             )
         )
-        print("POST: {}".format(put.status_code))
+        print("PUT: {}".format(put.status_code))
         if put.status_code not in self.success_list:
             print(put.content)
         else:
@@ -493,7 +493,7 @@ class SharePointConnector:
             headers=headers["POST"]
         )
         print(
-            "CheckIn file '{}' in library '{}' with comment {}.".format(
+            "CheckIn file '{}' in library '{}' with comment '{}'.".format(
                 os.path.basename(file_name),
                 destination_library,
                 comment
@@ -533,6 +533,91 @@ class SharePointConnector:
             print(delete.content)
         else:
             return delete.json()["d"]
+
+    def get_list_item_attachments(self, list_name, item_id):
+        get = self.session.get(
+            self.base_url + "_api/web/lists/getbytitle('{}')/items({})/AttachmentFiles/".format(
+                list_name,
+                item_id
+            ),
+            headers=headers["GET"]
+        )
+        print("Get attachments for item ID: {} from {} list.".format(list_name, item_id))
+        print("GET: {}".format(get.status_code))
+        if get.status_code not in self.success_list:
+            print(get.content)
+        else:
+            return get.json()["d"]["results"]
+
+    def get_list_item_attachment(self, list_name, item_id, file_name):
+        get = self.session.get(
+            self.base_url + "_api/web/lists/getbytitle('{}')/items({})/AttachmentFiles('{}')/$value".format(
+                list_name,
+                item_id,
+                file_name
+            ),
+            headers=headers["GET"]
+        )
+        print("Get {} for item ID: {} from {} list.".format(file_name, list_name, item_id))
+        print("GET: {}".format(get.status_code))
+        if get.status_code not in self.success_list:
+            print(get.content)
+        else:
+            return get.content
+
+    def create_list_item_attachment(self, list_name, item_id, file_path):
+        headers["POST"]["X-RequestDigest"] = self.digest()
+        file = open(file_path, "rb")
+        file_to_bites = bytearray(file.read())
+
+        post = self.session.post(
+            self.base_url + "_api/web/lists/getbytitle('{}')/items({})/AttachmentFiles/ add(FileName='{}')".format(
+                list_name,
+                item_id,
+                os.path.basename(file.name)
+            ),
+            headers=headers["POST"],
+            data=file_to_bites
+        )
+        print(
+            "Add file '{}' to list item '{}' in {}.".format(
+                os.path.basename(file.name),
+                item_id,
+                list_name
+            )
+        )
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]
+
+    def update_list_item_attachment(self, list_name, item_id, file_path):
+        headers["PUT"]["X-RequestDigest"] = self.digest()
+        file = open(file_path, "rb")
+        file_to_bites = bytearray(file.read())
+
+        put = self.session.post(
+            self.base_url + "_api/web/lists/getbytitle('{}')/items({})/AttachmentFiles('{}')/$value".format(
+                list_name,
+                item_id,
+                os.path.basename(file.name)
+            ),
+            headers=headers["POST"],
+            data=file_to_bites
+        )
+        print(
+            "Update file '{}' for list item '{}' in {}.".format(
+                os.path.basename(file.name),
+                item_id,
+                list_name
+            )
+        )
+        print("PUT: {}".format(put.status_code))
+        if put.status_code not in self.success_list:
+            print(put.content)
+        else:
+            return put.json()["d"]
 
     def digest(self):
         """
