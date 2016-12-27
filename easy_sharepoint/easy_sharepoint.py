@@ -337,6 +337,48 @@ class SharePointConnector:
 
             # Add functions related to file manipulation
 
+    def get_file(self, file_name, destination_library):
+        """
+        Gets file from folder/library
+
+        :param file_name: Required, name of the file
+        :param destination_library: Required, folder/library where file exists.
+        :return:
+        """
+        get = self.session.get(
+            self.base_url + "_api/web/GetFolderByServerRelativeUrl('/{}')/Files('{}')/$value".format(
+                destination_library,
+                file_name
+            ),
+            headers=headers["GET"]
+        )
+        print("Get {} from {}.".format(file_name, destination_library))
+        print("GET: {}".format(get.status_code))
+        if get.status_code not in self.success_list:
+            print(get.content)
+        else:
+            return get
+
+    def get_files_from_folder(self, folder_name):
+        """
+        Gets all files from given library/folder
+
+        :param folder_name: Required
+        :return:
+        """
+        get = self.session.get(
+            self.base_url + "_api/web/GetFolderByServerRelativeUrl('/{}')/Files".format(
+                folder_name
+            ),
+            headers=headers["GET"]
+        )
+        print("Get all files from {}.".format(folder_name))
+        print("GET: {}".format(get.status_code))
+        if get.status_code not in self.success_list:
+            print(get.content)
+        else:
+            return get.json()["d"]
+
     def create_new_file(self, file_path, destination_library):
         """
         Uploads a file to given library/folder.
