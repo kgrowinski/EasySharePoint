@@ -339,7 +339,7 @@ class SharePointConnector:
 
     def get_file(self, file_name, destination_library):
         """
-        Gets file from folder/library
+        Gets file from folder/library as binary
 
         :param file_name: Required, name of the file
         :param destination_library: Required, folder/library where file exists.
@@ -357,7 +357,7 @@ class SharePointConnector:
         if get.status_code not in self.success_list:
             print(get.content)
         else:
-            return get
+            return get.content
 
     def get_files_from_folder(self, folder_name):
         """
@@ -377,7 +377,7 @@ class SharePointConnector:
         if get.status_code not in self.success_list:
             print(get.content)
         else:
-            return get.json()["d"]
+            return get.json()["d"]["results"]
 
     def create_new_file(self, file_path, destination_library):
         """
