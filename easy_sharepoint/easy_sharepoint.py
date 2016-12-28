@@ -534,6 +534,13 @@ class SharePointConnector:
             return delete.json()["d"]
 
     def get_list_item_attachments(self, list_name, item_id):
+        """
+        Retrieves the list of avalible attachments for given list item
+
+        :param list_name: Requiered
+        :param item_id: Required
+        :return: Returns REST response
+        """
         get = self.session.get(
             self.base_url + "_api/web/lists/GetByTitle('{}')/items({})/AttachmentFiles/".format(
                 list_name,
@@ -549,6 +556,14 @@ class SharePointConnector:
             return get.json()["d"]["results"]
 
     def get_list_item_attachment(self, list_name, item_id, file_name):
+        """
+        Retrieves single list item attachment
+
+        :param list_name: Required
+        :param item_id: REquired
+        :param file_name: Required
+        :return: Returns REST response.
+        """
         get = self.session.get(
             self.base_url + "_api/web/lists/GetByTitle('{}')/items({})/AttachmentFiles('{}')/$value".format(
                 list_name,
@@ -565,6 +580,14 @@ class SharePointConnector:
             return get.content
 
     def create_list_item_attachment(self, list_name, item_id, file_path):
+        """
+        Creates a list item attachment
+
+        :param list_name: Required
+        :param item_id: Required
+        :param file_path: Required
+        :return: Returns REST response
+        """
         headers["POST"]["X-RequestDigest"] = self.digest()
         file = open(file_path, "rb")
         file_to_bites = bytearray(file.read())
@@ -592,6 +615,14 @@ class SharePointConnector:
             return post.json()["d"]
 
     def update_list_item_attachment(self, list_name, item_id, file_path):
+        """
+        Updates list item attachment
+
+        :param list_name: Required
+        :param item_id: Required
+        :param file_path: Required
+        :return: Returns REST response
+        """
         headers["PUT"]["X-RequestDigest"] = self.digest()
         file = open(file_path, "rb")
         file_to_bites = bytearray(file.read())
@@ -619,6 +650,14 @@ class SharePointConnector:
             return put.json()["d"]
 
     def custom_query(self, query, request_type="GET", data=None):
+        """
+        Allows to provide your API end point query
+
+        :param query: Required, url for your API end point
+        :param request_type: Optional, default set to "GET" - type of your request
+        :param data: Optional, default set to None. Data for POST or PUT requests
+        :return: returns REST response
+        """
         if request_type == "GET":
             get = self.session.get(
                 self.base_url + query,
