@@ -109,14 +109,14 @@ class SharePointConnector:
         if post.status_code not in self.success_list:
             print(post.content)
 
-    def create_new_list_field(self, list_name, data=None, filed_name="new_field", field_type=2):
+    def create_new_list_field(self, list_name, data=None, field_name="new_field", field_type=2):
         """
         Creates new column fields in SharepointList
         By default creates new Text field with "new_field" name.
 
         :param list_name: Required, provide the name of the list you want to modify as String.
         :param data: Optional Parameter when you need to use your own data
-        :param filed_name: Optional, the name of new field as String, by default set to "new_field"
+        :param field_name: Optional, the name of new field as String, by default set to "new_field"
         :param field_type: Please choose a field type as Integer, by default set to text field.
 
         Field Types:
@@ -182,7 +182,7 @@ class SharePointConnector:
         if data is None:
             data = {
                 '__metadata': {'type': 'SP.Field'},
-                'Title': str(filed_name),
+                'Title': str(field_name),
                 'FieldTypeKind': field_type
             }
         # Performs REST request
@@ -191,7 +191,7 @@ class SharePointConnector:
             headers=headers["POST"],
             data=json.dumps(data)
         )
-        print("Create new list header of name {} and type {} for {}.".format(filed_name, field_type, list_name))
+        print("Create new list header of name {} and type {} for {}.".format(field_name, field_type, list_name))
         print("POST: {}".format(post.status_code))
         if post.status_code not in self.success_list:
             print(post.content)
