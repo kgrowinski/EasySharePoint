@@ -8,7 +8,7 @@ setup(
     license='MIT',
     author='Krzysztof Growinski',
     author_email='k.growisnski@outlook.com',
-    description='Sharepoint List Operations Python Libriary',
+    description='Sharepoint List Operations Python Library',
     requires=[
         "requests",
         "requests_ntlm"

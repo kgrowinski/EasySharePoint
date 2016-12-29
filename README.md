@@ -8,7 +8,7 @@ It relays on well known and loved requests library <url>http://docs.python-reque
 <br>
 <br>
 <h3>Features</h3>
-EasaySharepoint commes with many functions that prevously might been tricky.
+EasySharepoint comes with many functions that previously might been tricky.
 
 
 # Usage description to be made
