@@ -233,6 +233,23 @@ class SharePointConnector:
         if delete.status_code not in self.success_list:
             print(delete.content)
 
+    def get_all_list_views(self, list_guid):
+        """
+        Gets all views for a given list.
+        :param list_guid: Required, individual id of Sharepoint List.
+        :return: Returns a REST response.
+        """
+        get = self.session.get(
+            self.base_url + "_api/web/lists(guid'{}')/views".format(list_guid),
+            headers=headers["GET"]
+        )
+        print("Get all list.")
+        print("GET: {}".format(get.status_code))
+        if get.status_code not in self.success_list:
+            print(get.content)
+        else:
+            return get.json()["d"]["results"]
+
     def get_list_items(self, list_name):
         """
         Gets all List Items from Sharepoint List of given Name
@@ -391,7 +408,7 @@ class SharePointConnector:
         file_as_bytes = bytearray(file.read())
 
         post = self.session.post(
-            self.base_url + "_api/web/GetFolderByServerRalativeUrl('/{}')/Files/add(url='{}',overwrite=true)".format(
+            self.base_url + "_api/web/GetFolderByServerRelativeUrl('/{}')/Files/add(url='{}',overwrite=true)".format(
                 destination_library,
                 os.path.basename(file.name)
             ),
@@ -769,3 +786,27 @@ class SharePointDataParser:
     @staticmethod
     def list_item_meta(list_name):
         return "SP.Data." + list_name[0].upper() + list_name[1::] + "ListItem"
+
+
+class PermissionHandler:
+    def __init__(self, login, password, base_url, domain="eur"):
+        self.session = requests.Session()
+        self.base_url = base_url + "/"
+        self.session.auth = HttpNtlmAuth("{}\\{}".format(domain, login), "{}".format(password))
+        self.success_list = [200, 201, 202]
+
+    def authenticate(self):
+        """
+        Checks users authentication.
+        Returns True/False dependently of user access.
+
+        :return: Boolean
+        """
+        data = self.session.get(
+            self.base_url,
+            headers=headers["GET"]
+        )
+        if data.status_code == 200:
+            return True
+        else:
+            return False
