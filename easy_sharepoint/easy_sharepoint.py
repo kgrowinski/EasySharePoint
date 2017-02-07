@@ -250,6 +250,23 @@ class SharePointConnector:
         else:
             return get.json()["d"]["results"]
 
+    def add_fields_to_view(self, list_guid, view_guid, field_name):
+        headers["POST"]["X-RequestDigest"] = self.digest()
+        post = self.session.post(
+            self.base_url + "_api/web/lists(guid'{}')/view('{}')/addviewfield('{}')".format(
+                list_guid,
+                view_guid,
+                field_name
+            ),
+            headers=headers["POST"]
+        )
+        print("Add {} field to the view.}.".format(field_name))
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]["results"]
+
     def get_list_items(self, list_name):
         """
         Gets all List Items from Sharepoint List of given Name
@@ -781,6 +798,7 @@ class SharePointDataParser:
 
     @staticmethod
     def list_field_data(data):
+        # todo: list field data
         pass
 
     @staticmethod
