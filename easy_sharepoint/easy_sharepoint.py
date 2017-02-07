@@ -275,6 +275,31 @@ class SharePointConnector:
         else:
             return post.json()["d"]
 
+    def remove_fields_from_view(self, list_guid, view_guid, field_name):
+        """
+        Removes a specific field to the ListView.
+
+        :param list_guid: Required, individual id of Sharepoint List.
+        :param view_guid: Required, individual id of Sharepoint View
+        :param field_name: name of the field to be removed
+        :return: Status of REST request.
+        """
+        headers["DELETE"]["X-RequestDigest"] = self.digest()
+        post = self.session.post(
+            self.base_url + "_api/web/lists(guid'{}')/views(guid'{}')/viewfields/removeviewfield('{}')".format(
+                list_guid,
+                view_guid,
+                field_name
+            ),
+            headers=headers["DELETE"]
+        )
+        print("Remove {} field to the view.".format(field_name))
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]
+
     def get_list_items(self, list_name):
         """
         Gets all List Items from Sharepoint List of given Name
@@ -292,6 +317,29 @@ class SharePointConnector:
             print(get.content)
         else:
             return get.json()["d"]["results"]
+
+    def remove_all_fields_from_view(self, list_guid, view_guid):
+        """
+        Removes all fields from List view.
+
+        :param list_guid: Required, individual id of Sharepoint List.
+        :param view_guid: REquired, individual id of Sharepoint View
+        :return: Status of the REST request
+        """
+        headers["DELETE"]["X-RequestDigest"] = self.digest()
+        post = self.session.post(
+            self.base_url + "_api/web/lists(guid'{}')/views(guid'{}')/viewfields/removeallviewfields".format(
+                list_guid,
+                view_guid,
+            ),
+            headers=headers["DELETE"]
+        )
+        print("Remove all fields from the view.")
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]
 
     def create_new_list_item(self, list_name, data=None):
         """
