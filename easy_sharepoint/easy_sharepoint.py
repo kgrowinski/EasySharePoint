@@ -35,6 +35,7 @@ class SharePointConnector:
     Class responsible for performing most of common SharePoint Operations.
     Use also to authenticate access to the SharepointSite and to get a digest value for POST requests.
     """
+
     def __init__(self, login, password, base_url, domain="eur"):
         self.session = requests.Session()
         self.base_url = base_url + "/"
@@ -255,9 +256,9 @@ class SharePointConnector:
         Adds a specific field to the ListView.
 
         :param list_guid: Required, individual id of Sharepoint List.
-        :param view_guid:
-        :param field_name:
-        :return:
+        :param view_guid: Required, individual id of Sharepoint View
+        :param field_name: Required, field name to be added
+        :return: Starus of the REST request.
         """
         headers["POST"]["X-RequestDigest"] = self.digest()
         post = self.session.post(
@@ -269,6 +270,61 @@ class SharePointConnector:
             headers=headers["POST"]
         )
         print("Add {} field to the view.".format(field_name))
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]
+
+    def change_field_index_in_view(self, list_guid, view_guid, field_name, field_index):
+        """
+        Adds a specific field to the ListView.
+
+        :param list_guid: Required, individual id of Sharepoint List.
+        :param view_guid: Required, individual id of Sharepoint View
+        :param field_name: Required, field name to be added
+        :return: Starus of the REST request.
+        """
+        headers["POST"]["X-RequestDigest"] = self.digest()
+        data = {
+            "field": field_name,
+            "index": field_index
+        }
+        post = self.session.post(
+            self.base_url + "_api/web/lists(guid'{}')/views(guid'{}')/viewfields/moveviewfieldto".format(
+                list_guid,
+                view_guid
+            ),
+            headers=headers["POST"],
+            data=json.dumps(data)
+        )
+        print("Moved {} field to the index {}.".format(field_name, field_index))
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]
+
+
+    def remove_fields_from_view(self, list_guid, view_guid, field_name):
+        """
+        Removes a specific field to the ListView.
+
+        :param list_guid: Required, individual id of Sharepoint List.
+        :param view_guid: Required, individual id of Sharepoint View
+        :param field_name: name of the field to be removed
+        :return: Status of REST request.
+        """
+        headers["DELETE"]["X-RequestDigest"] = self.digest()
+        post = self.session.post(
+            self.base_url + "_api/web/lists(guid'{}')/views(guid'{}')/viewfields/removeviewfield('{}')".format(
+                list_guid,
+                view_guid,
+                field_name
+            ),
+            headers=headers["DELETE"]
+        )
+        print("Remove {} field to the view.".format(field_name))
         print("POST: {}".format(post.status_code))
         if post.status_code not in self.success_list:
             print(post.content)
@@ -292,6 +348,29 @@ class SharePointConnector:
             print(get.content)
         else:
             return get.json()["d"]["results"]
+
+    def remove_all_fields_from_view(self, list_guid, view_guid):
+        """
+        Removes all fields from List view.
+
+        :param list_guid: Required, individual id of Sharepoint List.
+        :param view_guid: REquired, individual id of Sharepoint View
+        :return: Status of the REST request
+        """
+        headers["DELETE"]["X-RequestDigest"] = self.digest()
+        post = self.session.post(
+            self.base_url + "_api/web/lists(guid'{}')/views(guid'{}')/viewfields/removeallviewfields".format(
+                list_guid,
+                view_guid,
+            ),
+            headers=headers["DELETE"]
+        )
+        print("Remove all fields from the view.")
+        print("POST: {}".format(post.status_code))
+        if post.status_code not in self.success_list:
+            print(post.content)
+        else:
+            return post.json()["d"]
 
     def create_new_list_item(self, list_name, data=None):
         """
@@ -619,7 +698,7 @@ class SharePointConnector:
         if get.status_code not in self.success_list:
             print(get.content)
         else:
-            return get.content
+            return get.json()["d"]["results"]
 
     def create_list_item_attachment(self, list_name, item_id, file_path):
         """
@@ -698,7 +777,7 @@ class SharePointConnector:
         :param query: Required, url for your API end point
         :param request_type: Optional, default set to "GET" - type of your request
         :param data: Optional, default set to None. Data for POST or PUT requests
-        :return: returns REST response
+        :return: returns REST response status
         """
         if request_type == "GET":
             get = self.session.get(
@@ -706,35 +785,51 @@ class SharePointConnector:
                 headers=headers["GET"]
             )
             print("GET: {}".format(get.status_code))
+            if get.status_code not in self.success_list:
+                print(get.content)
+            else:
+                return get.json()["d"]
         elif request_type == "POST":
             if data is None:
                 raise AttributeError("Data needs to be provided to perform this request.")
             else:
                 headers["POST"]["X-RequestDigest"] = self.digest()
-                self.session.post(
+                post = self.session.post(
                     self.base_url + query,
                     headers=headers["POST"],
                     data=json.dumps(data)
                 )
+                if post.status_code not in self.success_list:
+                    print(post.content)
+                else:
+                    return post.json()["d"]
         elif request_type == "PUT":
             if data is None:
                 raise AttributeError("Data needs to be provided to perform this request.")
             else:
                 headers["PUT"]["X-RequestDigest"] = self.digest()
-                self.session.post(
+                post = self.session.post(
                     self.base_url + query,
                     headers=headers["PUT"],
                     data=json.dumps(data)
                 )
+                if post.status_code not in self.success_list:
+                    print(post.content)
+                else:
+                    return post.json()["d"]
         elif request_type == "DELETE":
             if data is None:
                 raise AttributeError("Data needs to be provided to perform this request.")
             else:
                 headers["DELETE"]["X-RequestDigest"] = self.digest()
-                self.session.post(
+                post = self.session.post(
                     self.base_url + query,
                     headers=headers["DELETE"],
                 )
+                if post.status_code not in self.success_list:
+                    print(post.content)
+                else:
+                    return post.json()["d"]
         else:
             raise AttributeError("Wrong request type.")
 
@@ -812,3 +907,27 @@ class SharePointDataParser:
     @staticmethod
     def list_item_meta(list_name):
         return "SP.Data." + list_name[0].upper() + list_name[1::] + "ListItem"
+
+
+class PermissionHandler:
+    def __init__(self, login, password, base_url, domain="eur"):
+        self.session = requests.Session()
+        self.base_url = base_url + "/"
+        self.session.auth = HttpNtlmAuth("{}\\{}".format(domain, login), "{}".format(password))
+        self.success_list = [200, 201, 202]
+
+    def authenticate(self):
+        """
+        Checks users authentication.
+        Returns True/False dependently of user access.
+
+        :return: Boolean
+        """
+        data = self.session.get(
+            self.base_url,
+            headers=headers["GET"]
+        )
+        if data.status_code == 200:
+            return True
+        else:
+            return False
