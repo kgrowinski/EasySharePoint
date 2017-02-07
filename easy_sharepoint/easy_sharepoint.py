@@ -251,21 +251,29 @@ class SharePointConnector:
             return get.json()["d"]["results"]
 
     def add_fields_to_view(self, list_guid, view_guid, field_name):
+        """
+        Adds a specific field to the ListView.
+
+        :param list_guid: Required, individual id of Sharepoint List.
+        :param view_guid:
+        :param field_name:
+        :return:
+        """
         headers["POST"]["X-RequestDigest"] = self.digest()
         post = self.session.post(
-            self.base_url + "_api/web/lists(guid'{}')/view('{}')/addviewfield('{}')".format(
+            self.base_url + "_api/web/lists(guid'{}')/views(guid'{}')/viewfields/addviewfield('{}')".format(
                 list_guid,
                 view_guid,
                 field_name
             ),
             headers=headers["POST"]
         )
-        print("Add {} field to the view.}.".format(field_name))
+        print("Add {} field to the view.".format(field_name))
         print("POST: {}".format(post.status_code))
         if post.status_code not in self.success_list:
             print(post.content)
         else:
-            return post.json()["d"]["results"]
+            return post.json()["d"]
 
     def get_list_items(self, list_name):
         """
