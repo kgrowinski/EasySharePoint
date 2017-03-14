@@ -18,6 +18,8 @@ EasySharepoint utilizes whole Microsoft Sharepoint REST architecture to work wit
 import easy_sharepoint
 
 connector = easy_sharepoint.SharePointConnector("login", "password", "sharepointURL")
+connector.create_new_list(list_name="myNewList")
+
 
 ```
 
