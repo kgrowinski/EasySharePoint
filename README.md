@@ -12,9 +12,8 @@ EasySharepoint utilizes whole Microsoft Sharepoint REST architecture to work wit
 <br>
 <br>
 <h3>Installation</h3>
-```bash
-
-$pip install easy_sharepoint
+.. code-block:: bash
+  $ pip install easy_sharepoint
 
 
 ```
