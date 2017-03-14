@@ -11,6 +11,12 @@ It relays on well known and loved requests library <url>http://docs.python-reque
 EasySharepoint utilizes whole Microsoft Sharepoint REST architecture to work with lists, views, folders and files.
 <br>
 <br>
+<h3>Installation</h3>
+```
+$ pip install easy_sharepoint
+```
+<br>
+<br>
 <h3>Usage</h3>
 
 ```python
