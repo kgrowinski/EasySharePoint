@@ -3,15 +3,15 @@
 
 
 <h3>About</h3>
-EasySharepoint is a Python 3 module to perform HTTP requests to Microsoft Sharepoint easily.
+EasySharePoint is a Python 3 module to perform HTTP requests to Microsoft Sharepoint easily.
 It relays on well known and loved requests library <url>http://docs.python-requests.org/en/master/</url>.
 <br>
 <br>
 <h3>Features</h3>
-EasySharepoint comes with many functions that previously might been tricky.
+EasySharepoint utilizes whole Microsoft Sharepoint REST architecture to work with lists, views, folders and files.
 
 
-# Usage description to be made
+
 
 
 
