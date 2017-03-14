@@ -13,7 +13,7 @@ EasySharepoint utilizes whole Microsoft Sharepoint REST architecture to work wit
 <br>
 <h3>Installation</h3>
 ```
-    $ pip install easy_sharepoint
+$ pip install easy_sharepoint
 ```
 <br>
 <br>
@@ -21,12 +21,12 @@ EasySharepoint utilizes whole Microsoft Sharepoint REST architecture to work wit
 
 ```python
 
-    import easy_sharepoint
+import easy_sharepoint
 
-    connector = easy_sharepoint.SharePointConnector("login", "password", "sharepointURL")
-    connector.create_new_list(list_name="myNewList")
+connector = easy_sharepoint.SharePointConnector("login", "password", "sharepointURL")
+connector.create_new_list(list_name="myNewList")
 
-    myList = connector.get_list_items(list_name="myNewList")
+myList = connector.get_list_items(list_name="myNewList")
 
 
 ```
