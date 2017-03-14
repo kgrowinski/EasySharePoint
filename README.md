@@ -25,7 +25,8 @@ myList = connector.get_list_items(list_name="myNewList")
 
 ```
 
-
+Above Example establishes session with SharePoint Site, then creates new list and assigns all its items to variable myList.
+Feel free to check other methods of SharePointConnector Object.
 
 
 
