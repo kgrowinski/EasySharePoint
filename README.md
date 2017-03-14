@@ -12,16 +12,16 @@ EasySharepoint utilizes whole Microsoft Sharepoint REST architecture to work wit
 <br>
 <br>
 <h3>Installation</h3>
-``` shell
+```
 
-pip install easy_sharepoint
+$pip install easy_sharepoint
 
 ```
 <br>
 <br>
 <h3>Usage</h3>
 
-``` python
+```python
 
 import easy_sharepoint
 
