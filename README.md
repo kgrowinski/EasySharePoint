@@ -9,7 +9,10 @@ It relays on well known and loved requests library <url>http://docs.python-reque
 <br>
 <h3>Features</h3>
 EasySharepoint utilizes whole Microsoft Sharepoint REST architecture to work with lists, views, folders and files.
-
+<br>
+<br>
+<h3>Usage</h3>
+connector = easy_sharepoint.SharePointConnector("login", "password", "sharepointURL")
 
 
 
